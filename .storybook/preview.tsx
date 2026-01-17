@@ -1,7 +1,7 @@
 import '@mantine/core/styles.css';
 
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
-import { theme } from '../src/theme';
+import { theme } from '../src/lib/mantine';
 
 export const parameters = {
   layout: 'fullscreen',

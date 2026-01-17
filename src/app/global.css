@@ -1,0 +1,8 @@
+.active {
+  font-weight: bold;
+  color: #1c7ed6; /* Mantine blue-6 */
+}
+
+.inactive {
+  color: inherit;
+}
