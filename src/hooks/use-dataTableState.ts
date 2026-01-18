@@ -1,71 +1,74 @@
-import { useMemo, useState } from 'react';
-import { useDebouncedValue } from '@mantine/hooks';
-import { IBaseFilter } from '@/components/ui/globaDataTable/GlobalFilterBar';
-import { OrderType } from '@/components';
+// useDataTableState.ts
+import { useMemo, useState, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
+;
+import { OrderType } from '@/components/ui/globaDataTable/GlobalDataTable';
+import { parseFilters, serializeFilters } from '@/utils/url-params';
+import { IBaseFilter } from '@/types';
+import { SearchType } from '@/types/crud.types';
 
 export type UseDataTableStateOptions<TFilters extends IBaseFilter, TColumnKey> = {
   initialFilters: TFilters;
   defaultVisibleColumns: TColumnKey[];
-  debounceMs?: number;
 };
 
 export function useDataTableState<TSelected, TFilters extends IBaseFilter, TColumnKey>(
   opts: UseDataTableStateOptions<TFilters, TColumnKey>
 ) {
-  const { initialFilters, defaultVisibleColumns, debounceMs = 400 } = opts;
+  const { initialFilters, defaultVisibleColumns } = opts;
+ 
 
-  // selection (rows)
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  
+  const filters = useMemo(() => {
+    return parseFilters<TFilters>(searchParams, initialFilters);
+  }, [searchParams, initialFilters]);
+
   const [internalSelected, setInternalSelected] = useState<TSelected[]>([]);
-
-  // visible columns
   const [visibleColumns, setVisibleColumns] = useState<TColumnKey[]>(defaultVisibleColumns);
 
-  // filters
-  const [filters, setFilters] = useState<TFilters>(initialFilters);
-  const [debouncedFilters] = useDebouncedValue(filters, debounceMs);
+  const updateFilters = useCallback((patch: Partial<TFilters>) => {
+   
+    setSearchParams((prevParams) => {
+      const current = parseFilters(prevParams, initialFilters);
+      const updated = { ...current, ...patch };
+      
+      if (patch.page === undefined && (patch.q !== undefined || patch.sortBy !== undefined)) {
+        updated.page = 1;
+      }
+      
+      return serializeFilters(updated);
+    }, { replace: true });
+  }, [initialFilters, setSearchParams]);
 
   const actions = useMemo(() => {
     return {
-      updateFilters: (patch: Partial<TFilters>) => setFilters((prev) => ({ ...prev, ...patch })),
+      updateFilters,
+      setSearch: (q: SearchType) => updateFilters({ q } as Partial<TFilters>),
+      setPage: (page: number) => updateFilters({ page } as Partial<TFilters>),
+      setLimit: (limit: number) => updateFilters({ limit, page: 1 } as Partial<TFilters>),
+      setOrder: (sortBy: string, order: OrderType) => updateFilters({ sortBy, order } as Partial<TFilters>),
       
-      setOrder: (sortBy: string, order: OrderType) => setFilters((prev)=>({...prev,sortBy,order})),
-      setSearch: (q: string | null | undefined) =>
-        setFilters((prev) => ({ ...prev, q }) as TFilters),
-      setPage: (page: number) => setFilters((prev) => ({ ...prev, page }) as TFilters),
-
-      setLimit: (limit: number) => setFilters((prev) => ({ ...prev, limit, page: 1 }) as TFilters),
-
+      resetFilters: () => setSearchParams(serializeFilters(initialFilters)),
+      
       setInternalSelected,
       setVisibleColumns,
-      setFilters,
-
       clearSelection: () => setInternalSelected([]),
-
-      resetFilters: () => setFilters(initialFilters),
-
       resetColumns: () => setVisibleColumns(defaultVisibleColumns),
-
-      resetAll: () => {
-        setInternalSelected([]);
-        setVisibleColumns(defaultVisibleColumns);
-        setFilters(initialFilters);
-      },
-
+      
       toggleColumn: (key: TColumnKey) => {
         setVisibleColumns((prev) =>
           prev.includes(key) ? prev.filter((c) => c !== key) : [...prev, key]
         );
       },
     };
-  }, [initialFilters, defaultVisibleColumns]);
+  }, [updateFilters, initialFilters, setSearchParams, defaultVisibleColumns]);
 
   return {
     internalSelected,
     visibleColumns,
     filters,
-    debouncedFilters,
     actions,
   };
 }
-
-export type UseDataTableStateType = typeof useDataTableState;

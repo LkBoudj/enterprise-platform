@@ -1,0 +1,92 @@
+# Data Table Architecture Analysis & Refactoring Strategy
+
+## 1. Executive Summary
+
+This document analyzes the current architecture of the data table implementation, focusing on the relationship between the state controller (`useUserPageController`), the state management engine (`useDataTableState`), and data fetching (`useGetUsers`).
+
+The current implementation is functional but suffers from two major architectural deficiencies:
+1.  **State is managed locally (`useState`)**, preventing shareable/bookmarkable URLs.
+2.  **Filter state is disconnected from data fetching**, rendering the filters non-functional.
+
+The proposed strategy is to refactor the `useUserPageController` to become a "smart controller" that encapsulates both state management and data fetching, using the `debouncedFilters` to trigger API calls. A further enhancement to consider is moving state management from `useState` to `useSearchParams` to synchronize the UI with the URL.
+
+---
+
+## 2. Detailed Architectural Analysis
+
+### 2.1. The Core Engine (`useDataTableState.ts`)
+
+*   **State Management:** The engine uses React's local `useState` hook to manage filters:
+    `const [filters, setFilters] = useState<TFilters>(initialFilters);`
+*   **Architectural Impact:** As you correctly pointed out, this is a significant limitation. It prevents the state of the data table (filters, pagination, sorting) from being reflected in the URL. Professional data tables should use URL state (`useSearchParams`) to allow users to share and bookmark specific views.
+*   **Debouncing:** Debouncing is handled internally and effectively using Mantine's `useDebouncedValue` hook:
+    `const [debouncedFilters] = useDebouncedValue(filters, debounceMs);`
+
+### 2.2. The Filter Structure (`GlobalFilterBar.tsx`)
+
+*   **Flexibility:** The base filter interface is well-designed for future extension:
+    ```typescript
+    export interface IBaseFilter {
+      // ... base properties
+      [key: string]: any; // Index signature for custom filters
+    }
+    ```
+*   **Conclusion:** The filter structure is robust and does not require immediate refactoring. It can support complex filters like date ranges or multi-selects.
+
+### 2.3. The Missing Link (Controller vs. Page)
+
+*   **Problem:** You have correctly identified the critical disconnect. The controller (`useUserPageController`) calculates `debouncedFilters`, but the page component (`UserManagementPage`) calls the data-fetching hook (`useGetUsers`) without any parameters.
+*   **Current Flow:**
+    1. `GlobalFilterBar` updates `filters` in `useDataTableState`.
+    2. `useDataTableState` produces `debouncedFilters`.
+    3. `UserManagementPage` **ignores** `debouncedFilters`.
+    4. `UserManagementPage` calls `useGetUsers()` with no arguments.
+*   **Result:** The filters in the UI have no effect on the data being fetched.
+
+---
+
+## 3. Proposed Refactoring Strategy: The Smart Controller Pattern
+
+The `useUserPageController` should be elevated to be the single source of truth for the user data table.
+
+### 3.1. Phase 1: Integrate Data Fetching
+
+1.  **Modify `useUserPageController`:**
+    *   It should accept the `debouncedFilters` from `useDataTableState`.
+    *   It will call the `useGetUsers(debouncedFilters)` hook internally.
+    *   It will return the `data`, `isLoading`, and `isFetching` states from the query.
+2.  **Modify `UserManagementPage.tsx`:**
+    *   Remove the direct call to `useGetUsers()`.
+    *   Consume the data and loading states directly from the `useUserPageController` hook.
+
+**Example Target:**
+```typescript
+// Inside useUserPageController.ts
+export const useUserPageController = () => {
+  // ... existing state logic
+  const { data, isLoading, isFetching } = useGetUsers(debouncedFilters); // <-- The Fix
+
+  return {
+    // ... existing returns
+    data,
+    isLoading,
+    isFetching,
+  };
+};
+```
+
+### 3.2. Phase 2 (Optional but Recommended): URL State Management
+
+1.  **Refactor `useDataTableState.ts`:**
+    *   Replace `useState` for filters with React Router's `useSearchParams`.
+    *   Read initial filter values from the URL on mount.
+    *   Update the URL search params whenever filters change.
+    *   This makes the `debouncedFilters` logic slightly more complex but provides a far superior user experience.
+
+---
+
+## 4. Decision for Next Steps
+
+Based on this analysis, the path forward is clear. The immediate priority is to fix the disconnected data fetching logic.
+
+**Action Item:** Please confirm if I should proceed with **Phase 1: Integrate Data Fetching**. This will make the filters functional and realize the intended architecture.

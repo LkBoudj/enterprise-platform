@@ -1,102 +1,47 @@
-import apiClient from '@/lib/apiClient';
-import { ApiError } from '@/lib/apiError';
-import { CreateUserType } from '../validation/create.user.validation';
-import { UserType } from '../validation/read.user.validation';
-import { UpdateUserType } from '../validation/update.user.validation';
+import { httpClient } from '@/core/network/axios.adapter';
+import { IHttpClient } from '@/core/network/http.types';
+import { ApiResponse, IBaseFilter } from '@/types';
+import { createApiResponseSchema } from '@/validation/validation.helpers';
+import { CreateUserDto, UserSchema, UserType } from '../validation/user.schema'; // Ensure this path matches your structure
 
-interface ApiResponse<T> {
-  data: T;
-  success?: boolean;
-  message: string;
-  errors?: any;
+export class UserService {
+  constructor(private readonly http: IHttpClient) {}
+
+  // 🟢 READ ALL
+  async getUsers(signal?: AbortSignal, params?: IBaseFilter): Promise<ApiResponse<UserType>> {
+    return this.http.get<ApiResponse<UserType>>('/users', {
+      // schema: createApiResponseSchema(UserSchema), // FORCE VALIDATION: Must be a UsersApiResponse
+      signal, // ENABLE CANCELLATION
+      params,
+    });
+  }
+
+  // 🟢 READ ONE
+  async getUserById(id: string): Promise<UserType> {
+    return this.http.get<UserType>(`/users/${id}`, {
+      schema: UserSchema, // FORCE VALIDATION: Must be a single User
+    });
+  }
+
+  // 🟡 CREATE
+  async createUser(data: CreateUserDto): Promise<UserType> {
+    return this.http.post<UserType>('/users', data, {
+      schema: UserSchema, // Validate the created user response
+    });
+  }
+
+  // 🔵 UPDATE
+  // We use Partial<CreateUserDto> to allow updating specific fields
+  async updateUser(id: string, data: Partial<CreateUserDto>): Promise<UserType> {
+    return this.http.put<UserType>(`/users/${id}`, data, {
+      schema: UserSchema, // Validate the updated user response
+    });
+  }
+
+  // 🔴 DELETE
+  async deleteUser(id: string): Promise<void> {
+    return this.http.delete<void>(`/users/${id}`);
+  }
 }
-/**
- * Fetches a list of all users from the API.
- * @returns A promise that resolves to an array of UserType.
- */
 
-const getUsers = async (): Promise<UserType[]> => {
-  try {
-    const response = await apiClient.get<UserType[]>('/users');
-    return response.data;
-  } catch (error) {
-    // The error is already an instance of ApiError thanks to the interceptor
-    console.error('Failed to fetch users:', error);
-    throw error;
-  }
-};
-
-/**
- * Fetches a single user by their ID.
- * @param userId The ID of the user to fetch.
- * @returns A promise that resolves to a UserType object.
- */
-const getUserById = async (userId: string): Promise<UserType> => {
-  try {
-    const response = await apiClient.get<UserType>(`/users/${userId}`);
-    return response.data;
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 404) {
-      // Provide a more specific error message for this common case
-      throw new ApiError({
-        ...error,
-        message: `User with ID "${userId}" was not found.`,
-      });
-    }
-    console.error(`Failed to fetch user ${userId}:`, error);
-    throw error;
-  }
-};
-
-/**
- * Creates a new user.
- * @param userData The data for the new user.
- * @returns A promise that resolves to the newly created UserType object.
- */
-const createUser = async (userData: CreateUserType): Promise<UserType> => {
-  try {
-    const response = await apiClient.post<UserType>('/users', userData);
-    return response.data;
-  } catch (error) {
-    console.error('Failed to create user:', error);
-    throw error;
-  }
-};
-
-/**
- * Updates an existing user by their ID.
- * @param userId The ID of the user to update.
- * @param updates The data to update.
- * @returns A promise that resolves to the updated UserType object.
- */
-const updateUser = async (userId: string, updates: UpdateUserType): Promise<UserType> => {
-  try {
-    const response = await apiClient.patch<UserType>(`/users/${userId}`, updates);
-    return response.data;
-  } catch (error) {
-    console.error(`Failed to update user ${userId}:`, error);
-    throw error;
-  }
-};
-
-/**
- * Deletes a user by their ID.
- * @param userId The ID of the user to delete.
- * @returns A promise that resolves when the user is deleted.
- */
-const deleteUser = async (userId: string): Promise<void> => {
-  try {
-    await apiClient.delete(`/users/${userId}`);
-  } catch (error) {
-    console.error(`Failed to delete user ${userId}:`, error);
-    throw error;
-  }
-};
-
-export const userService = {
-  getUsers,
-  getUserById,
-  createUser,
-  updateUser,
-  deleteUser,
-};
+export const userService = new UserService(httpClient);

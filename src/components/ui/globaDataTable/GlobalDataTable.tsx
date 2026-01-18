@@ -44,7 +44,8 @@ export function GlobalDataTable<T>({
   selectedRecords,
   onSelectedRecordsChange,
 }: GlobalTableProps<T>) {
-  // Controlled sort status
+
+  
   const sortStatus: DataTableSortStatus<T> = useMemo(
     () => ({
       columnAccessor: externalSortBy as any, // mantine-datatable accepts string
@@ -53,7 +54,6 @@ export function GlobalDataTable<T>({
     [externalSortBy, externalOrder]
   );
 
-  console.log(sortStatus, externalSortBy);
   return (
     <Card withBorder radius="md" p="xs">
       <ScrollArea style={{ width: '100%' }} type="auto">

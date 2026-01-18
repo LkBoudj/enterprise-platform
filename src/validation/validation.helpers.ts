@@ -35,3 +35,18 @@ export function parseOrThrow<T extends z.ZodTypeAny>(schema: T, data: unknown): 
 export function safeParse<T extends z.ZodTypeAny>(schema: T, data: unknown) {
   return schema.safeParse(data);
 }
+
+
+
+// 1. The Generic Schema Factory Function
+export const createApiResponseSchema = <T extends z.ZodTypeAny>(itemSchema: T) => {
+  return z.object({
+    data: z.array(itemSchema), // Here is where the "Generic" T is injected
+    meta: z.object({
+      total: z.number(),
+      page: z.number(),
+      limit: z.number(),
+      lastPage: z.number(),
+    }),
+  });
+};

@@ -30,7 +30,7 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { useGetUser } from '../hocks/useUserQuery';
+import { useGetUser } from '../hooks/useUserQuery';
 import { UserType } from '../validation/read.user.validation';
 
 interface ViewPageLayoutProps extends React.PropsWithChildren {
@@ -238,7 +238,6 @@ const UserViewPage: React.FC = () => {
       refetch={refetch}
       isFetching={isFetching}
     >
-      {/* ✅ لا ترندر أي شيء إلا إذا data موجود */}
       {data && (
         <Card withBorder radius="lg" padding="lg">
           <Grid align="center">
