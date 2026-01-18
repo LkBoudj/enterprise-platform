@@ -89,16 +89,16 @@ export function GenericCrudPage<T extends { id: string | number }>({
       </Modal>
 
       {/* Edit Modal Container */}
-      {editModal.user && (
+      {editModal.item && (
         <Modal
           opened={editModal.opened}
           onClose={editModal.close}
           title={`Edit ${title}`}
           centered
           closeOnClickOutside={false}
-          key={String(editModal.user.id)} // Force re-render
+          key={String(editModal.item.id)} // Force re-render
         >
-          <EditForm item={editModal.user} onClose={editModal.close} />
+          <EditForm item={editModal.item} onClose={editModal.close} />
         </Modal>
       )}
     </>

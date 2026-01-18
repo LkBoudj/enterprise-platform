@@ -1,17 +1,17 @@
 import { OrderType } from '.';
 export type SearchType = string | null | undefined;
 export interface ICrudController<T> {
-  // البيانات
+  // Data
   records: T[];
   total: number;
   isLoading: boolean;
   
-  // الحالة
+  // State
   page: number;
   limit: number;
   filters: any;
   
-  // الأفعال (Actions)
+  // Actions
   actions: {
     setPage: (page: number) => void;
     setLimit: (limit: number) => void;
@@ -19,15 +19,20 @@ export interface ICrudController<T> {
     setOrder: (sortBy: string, order: OrderType) => void;
     setVisibleColumns: (cols: string[]) => void;
     setInternalSelected: (records: T[]) => void;
+    // Add other actions from useDataTableState if needed
+    clearSelection: () => void;
+    resetFilters: () => void;
+    resetColumns: () => void;
+    toggleColumn: (key: string) => void;
   };
 
-  // حالة العرض
+  // View state
   visibleColumns: string[];
   internalSelected: T[];
-  columns: any[]; // أعمدة الجدول
+  columns: any[]; // Table columns
   allColumns: any; 
 
-  // المودالات (التحكم في الفتح والإغلاق)
+  // Modals (open/close control)
   createModal: {
     opened: boolean;
     open: () => void;
@@ -36,6 +41,8 @@ export interface ICrudController<T> {
   editModal: {
     opened: boolean;
     close: () => void;
-    user: T | null; // سنسميها item في النسخة العامة
+    item: T | null; // Use generic 'item' instead of 'user'
+    onEdit: (item: T) => void;
   };
+  error: unknown;
 }

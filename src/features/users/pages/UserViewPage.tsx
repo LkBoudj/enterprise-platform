@@ -31,7 +31,7 @@ import {
   Title,
 } from '@mantine/core';
 import { useGetUser } from '../hooks/useUserQuery';
-import { UserType } from '../validation/read.user.validation';
+import { UserType } from '../validation/user.schema';
 
 interface ViewPageLayoutProps extends React.PropsWithChildren {
   isLoading?: boolean;
