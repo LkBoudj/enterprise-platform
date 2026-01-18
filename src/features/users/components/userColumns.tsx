@@ -14,6 +14,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const userColumnOptions: ColumnOption[] = [
+  { value: 'code', label: 'User Code' }, // Add code as an option
   { value: 'name', label: 'User Info' },
   { value: 'email', label: 'Email' },
   { value: 'phone', label: 'Phone' },
@@ -35,6 +36,13 @@ export const useUserColumns = ({ visibleColumns, onView, onEdit, onDelete }: Use
   
   const columns: DataTableColumn<UserType>[] = useMemo(() => {
     return [
+      {
+        accessor: 'code', // New column for code
+        title: 'User Code',
+        hidden: !visibleColumns.includes('code'),
+        sortable: true,
+        width: 100,
+      },
       {
         accessor: 'name',
         title: 'User',

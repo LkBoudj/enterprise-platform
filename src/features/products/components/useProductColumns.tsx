@@ -13,7 +13,7 @@ const STATUS_COLORS: Record<ProductType['status'], string> = {
 
 // Column options for visibility selection
 const productColumnOptions: ColumnOption[] = [
-  { value: 'id', label: 'ID' },
+  { value: 'code', label: 'Code' }, // Changed from 'id' to 'code'
   { value: 'title', label: 'Title' },
   { value: 'price', label: 'Price' },
   { value: 'stock', label: 'Stock' },
@@ -33,9 +33,9 @@ export const useProductColumns = ({ visibleColumns, onView, onEdit, onDelete }: 
   const columns: DataTableColumn<ProductType>[] = useMemo(() => {
     return [
       {
-        accessor: 'id',
-        title: 'ID',
-        hidden: !visibleColumns.includes('id'),
+        accessor: 'code', // Changed from 'id' to 'code'
+        title: 'Product Code', // Changed from 'ID' to 'Product Code'
+        hidden: !visibleColumns.includes('code'),
         sortable: true,
       },
       {

@@ -17,8 +17,8 @@ export class UserService {
   }
 
   // 🟢 READ ONE
-  async getUserById(id: string): Promise<UserType> {
-    return this.http.get<UserType>(`/users/${id}`, {
+  async getUserById(code: string): Promise<UserType> {
+    return this.http.get<UserType>(`/users/${code}`, {
       schema: UserSchema, // FORCE VALIDATION: Must be a single User
     });
   }
@@ -32,15 +32,15 @@ export class UserService {
 
   // 🔵 UPDATE
   // We use Partial<CreateUserDto> to allow updating specific fields
-  async updateUser(id: string, data: Partial<CreateUserDto>): Promise<UserType> {
-    return this.http.put<UserType>(`/users/${id}`, data, {
+  async updateUser(code: string, data: Partial<CreateUserDto>): Promise<UserType> {
+    return this.http.put<UserType>(`/users/${code}`, data, {
       schema: UserSchema, // Validate the updated user response
     });
   }
 
   // 🔴 DELETE
-  async deleteUser(id: string): Promise<void> {
-    return this.http.delete<void>(`/users/${id}`);
+  async deleteUser(code: string): Promise<void> {
+    return this.http.delete<void>(`/users/${code}`);
   }
 }
 

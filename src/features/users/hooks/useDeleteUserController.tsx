@@ -15,7 +15,7 @@ export const useDeleteUserController = () => {
       centered: true,
       children: (
         <Text size="sm">
-          Are you sure you want to delete <strong>{user.name}</strong>?<br />
+          Are you sure you want to delete <strong>{user.name}</strong> (Code: {user.code})?<br />
           This action is destructive and cannot be undone.
         </Text>
       ),
@@ -25,20 +25,20 @@ export const useDeleteUserController = () => {
       onConfirm: async () => {
         try {
           // ننتظر الحذف
-          await mutateAsync(user.id);
+          await mutateAsync(user.code); // Use user.code for deletion
 
           queryClient.invalidateQueries({ queryKey: ['users'] });
           // نجاح
           notifications.show({
             title: 'Deleted',
-            message: 'User deleted successfully',
+            message: `User "${user.name}" (Code: ${user.code}) deleted successfully`,
             color: 'green',
           });
         } catch (error) {
           // فشل
           notifications.show({
             title: 'Error',
-            message: 'Failed to delete user',
+            message: `Failed to delete user "${user.name}" (Code: ${user.code})`,
             color: 'red',
           });
         }

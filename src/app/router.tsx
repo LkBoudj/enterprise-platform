@@ -17,7 +17,7 @@ export const router = createBrowserRouter([
         element: <UserManagementPage />,
       },
       {
-        path: '/users/:id',
+        path: '/users/:code', // Changed from /users/:id to /users/:code
         element: <UserViewPage />,
       },
       {

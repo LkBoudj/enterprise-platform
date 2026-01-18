@@ -21,6 +21,7 @@ const INITIAL_USER_FILTERS: IUserFilter = {
 };
 
 export const defaultVisibleColumns = [
+  'code', // Use code as primary identifier for display
   'name',
   'email',
   'role',
@@ -58,9 +59,8 @@ export const useUserPageController = () => {
   const {confirmDelete} = useDeleteUserController();
   const { columns, allColumns } = useUserColumns({
     visibleColumns,
-    onView: (user) => navigate(`/users/${user.id}`),
+    onView: (user) => navigate(`/users/${user.code}`), // Navigate using code
     onEdit: handleEditClick, // Example action
-    // onEdit: (user) => navigate(`/users/${user.id}/edit`), // Example action
     onDelete: confirmDelete, // Example action
   });
 
@@ -90,8 +90,8 @@ export const useUserPageController = () => {
     editModal: {
       opened: editModalOpened,
       close: closeEditModal,
-      user: userToEdit,
-      onEdit: handleEditClick, // نمرر هذه الدالة للجدول
+      item: userToEdit, // Use 'item' to be consistent with ICrudController
+      onEdit: handleEditClick,
     },
   };
 };

@@ -12,6 +12,7 @@ export const generateProducts = (count: number): ProductType[] => {
     const status = faker.helpers.arrayElement(ProductStatusEnum.options);
     return {
       id: faker.string.uuid(),
+      code: faker.commerce.productAdjective().substring(0,3).toUpperCase() + faker.number.int({min:100, max:999}), // Unique product code
       title: faker.commerce.productName(),
       price: parseFloat(faker.commerce.price()),
       stock: status === 'In Stock' ? faker.number.int({ min: 1, max: 100 }) : 0,

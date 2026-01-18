@@ -16,6 +16,7 @@ const statuses: ('active' | 'inactive')[] = ['active', 'inactive'];
 
 export const users: UserType[] = Array.from({ length: 50 }, (_, index) => ({
   id: `${index + 1}`,
+  code: faker.string.alphanumeric({ length: 6 }).toUpperCase(), // Generate a unique code
   name: faker.person.fullName(),
   email: faker.internet.email(),
   role: faker.helpers.arrayElement(roles),

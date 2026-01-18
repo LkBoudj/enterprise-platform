@@ -19,11 +19,11 @@ export const useGetUsers = (filters: IBaseFilter) => {
   });
 };
 
-export const useGetUser = (id?: string) => {
+export const useGetUser = (code?: string) => {
   return useQuery({
-    queryKey: ['users', id], 
-    enabled: !!id, // Only run if ID exists
-    queryFn: () => userService.getUserById(id as string),
+    queryKey: ['users', code], 
+    enabled: !!code, // Only run if CODE exists
+    queryFn: () => userService.getUserById(code as string),
     staleTime: 1000 * 60 * 5, 
   });
 };
@@ -42,15 +42,15 @@ export const useCreateUser = () => {
 // 🔵 UPDATE (PUT/PATCH)
 // ==============================
 
-// We need an object that contains both ID and Data
+// We need an object that contains both CODE and Data
 interface UpdateUserParams {
-  id: string;
+  code: string; // Changed from id to code
   data: Partial<CreateUserDto>; // Partial allows sending only changed fields
 }
 
 export const useUpdateUser = () => {
   return useMutation({
-    mutationFn: ({ id, data }: UpdateUserParams) => userService.updateUser(id, data),
+    mutationFn: ({ code, data }: UpdateUserParams) => userService.updateUser(code, data),
   });
 };
 
@@ -60,6 +60,6 @@ export const useUpdateUser = () => {
 
 export const useDeleteUser = () => {
   return useMutation({
-    mutationFn: (id: string) => userService.deleteUser(id),
+    mutationFn: (code: string) => userService.deleteUser(code), // Changed from id to code
   });
 };

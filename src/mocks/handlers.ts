@@ -2,6 +2,7 @@ import { http, HttpResponse, delay } from 'msw';
 import { users } from './data/users';
 import { mockProducts } from './data/products';
 import { ProductType } from '@/features/products/validation/product.schema';
+import { UserType } from '@/features/users/validation/user.schema'; // Import UserType
 
 // 2. Initial Mock Data (The "Database") for Products
 let products: ProductType[] = [...mockProducts];
@@ -24,7 +25,8 @@ export const handlers = [
     if (q) {
       filteredData = users.filter((user) =>
         user.name.toLowerCase().includes(q) ||
-        user.email.toLowerCase().includes(q)
+        user.email.toLowerCase().includes(q) ||
+        (user.code && user.code.toLowerCase().includes(q)) // Filter by code
       );
     }
 
@@ -45,11 +47,11 @@ export const handlers = [
   }),
 
   // ==========================================
-  // 🟢 2. READ ONE User (GET /:id)
+  // 🟢 2. READ ONE User (GET /:code)
   // ==========================================
-  http.get('*/users/:id', async ({ params }) => {
-    const { id } = params;
-    const user = users.find((u) => u.id === id);
+  http.get('*/users/:code', async ({ params }) => {
+    const { code } = params;
+    const user = users.find((u) => u.code === code);
 
     if (!user) {
       return new HttpResponse(null, { status: 404 });
@@ -69,6 +71,7 @@ export const handlers = [
     const createdUser: UserType = {
       // Generate fake ID and Metadata
       id: Math.floor(Math.random() * 100000).toString(),
+      code: Math.random().toString(36).substring(2, 8).toUpperCase(), // Generate unique code
       lastActive: new Date().toISOString(),
       photo: null,
       name: newUser.name || 'Unknown',
@@ -86,15 +89,15 @@ export const handlers = [
   }),
 
   // ==========================================
-  // 🔵 4. UPDATE User (PUT /:id)
+  // 🔵 4. UPDATE User (PUT /:code)
   // ==========================================
-  http.put('*/users/:id', async ({ request, params }) => {
+  http.put('*/users/:code', async ({ request, params }) => {
     await delay(500);
 
-    const { id } = params;
+    const { code } = params;
     const updates = (await request.json()) as Partial<UserType>;
 
-    const userIndex = users.findIndex((u) => u.id === id);
+    const userIndex = users.findIndex((u) => u.code === code);
 
     if (userIndex === -1) {
       return new HttpResponse(null, { status: 404 });
@@ -107,23 +110,23 @@ export const handlers = [
   }),
 
   // ==========================================
-  // 🔴 5. DELETE User (DELETE /:id)
+  // 🔴 5. DELETE User (DELETE /:code)
   // ==========================================
-  http.delete('*/users/:id', async ({ params }) => {
+  http.delete('*/users/:code', async ({ params }) => {
     await delay(400);
 
-    const { id } = params;
+    const { code } = params;
     
     // Check if exists
-    const exists = users.some((u) => u.id === id);
+    const exists = users.some((u) => u.code === code);
     if (!exists) {
       return new HttpResponse(null, { status: 404 });
     }
 
     // Remove from array
-    users = users.filter((u) => u.id !== id);
+    users = users.filter((u) => u.code !== code);
 
-    return HttpResponse.json({ success: true, id });
+    return HttpResponse.json({ success: true, code });
   }),
 
   // ==========================================
@@ -138,11 +141,17 @@ export const handlers = [
     const page = Number(url.searchParams.get('page') || 1);
     const limit = Number(url.searchParams.get('limit') || 10);
     const title = url.searchParams.get('title')?.toLowerCase();
+    const code = url.searchParams.get('code')?.toLowerCase(); // Filter by code
 
     let filteredProducts = products;
     if (title) {
       filteredProducts = products.filter((product) =>
         product.title.toLowerCase().includes(title)
+      );
+    }
+    if (code) {
+      filteredProducts = filteredProducts.filter((product) =>
+        product.code.toLowerCase().includes(code)
       );
     }
 
@@ -161,10 +170,10 @@ export const handlers = [
     });
   }),
 
-  // 🟢 READ ONE Product (GET /:id)
-  http.get('*/products/:id', async ({ params }) => {
-    const { id } = params;
-    const product = products.find((p) => p.id === id);
+  // 🟢 READ ONE Product (GET /:code)
+  http.get('*/products/:code', async ({ params }) => {
+    const { code } = params;
+    const product = products.find((p) => p.code === code);
 
     if (!product) {
       return new HttpResponse(null, { status: 404 });
@@ -180,18 +189,19 @@ export const handlers = [
     const createdProduct: ProductType = {
       ...newProduct,
       id: Math.random().toString(36).substring(2, 15), // Simple unique ID
+      code: Math.random().toString(36).substring(2, 8).toUpperCase(), // Generate unique code
     };
     products.unshift(createdProduct); // Add to the top
     return HttpResponse.json(createdProduct, { status: 201 });
   }),
 
-  // 🔵 UPDATE Product (PUT /:id)
-  http.put('*/products/:id', async ({ request, params }) => {
+  // 🔵 UPDATE Product (PUT /:code)
+  http.put('*/products/:code', async ({ request, params }) => {
     await delay(500);
-    const { id } = params;
+    const { code } = params;
     const updates = (await request.json()) as Partial<ProductType>;
 
-    const productIndex = products.findIndex((p) => p.id === id);
+    const productIndex = products.findIndex((p) => p.code === code);
     if (productIndex === -1) {
       return new HttpResponse(null, { status: 404 });
     }
@@ -200,16 +210,16 @@ export const handlers = [
     return HttpResponse.json(products[productIndex]);
   }),
 
-  // 🔴 DELETE Product (DELETE /:id)
-  http.delete('*/products/:id', async ({ params }) => {
+  // 🔴 DELETE Product (DELETE /:code)
+  http.delete('*/products/:code', async ({ params }) => {
     await delay(400);
-    const { id } = params;
-    const exists = products.some((p) => p.id === id);
+    const { code } = params;
+    const exists = products.some((p) => p.code === code);
     if (!exists) {
       return new HttpResponse(null, { status: 404 });
     }
 
-    products = products.filter((p) => p.id !== id);
-    return HttpResponse.json({ success: true, id });
+    products = products.filter((p) => p.code !== code);
+    return HttpResponse.json({ success: true, code });
   }),
 ];

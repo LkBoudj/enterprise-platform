@@ -38,9 +38,9 @@ export class ProductService implements ICrudService<ProductType, CreateProductDt
     });
   }
 
-  // Retrieves a single product by its ID
-  async getById(id: string, signal?: AbortSignal): Promise<ProductType> {
-    return this.http.get<ProductType>(`/products/${id}`, {
+  // Retrieves a single product by its code
+  async getById(code: string, signal?: AbortSignal): Promise<ProductType> {
+    return this.http.get<ProductType>(`/products/${code}`, {
       schema: ProductSchema, // Validates the response against the ProductSchema
       signal,
     });
@@ -53,16 +53,16 @@ export class ProductService implements ICrudService<ProductType, CreateProductDt
     });
   }
 
-  // Updates an existing product by its ID
-  async update(id: string, data: UpdateProductDto): Promise<ProductType> {
-    return this.http.put<ProductType>(`/products/${id}`, data, {
+  // Updates an existing product by its code
+  async update(code: string, data: UpdateProductDto): Promise<ProductType> {
+    return this.http.put<ProductType>(`/products/${code}`, data, {
       schema: ProductSchema, // Validates the response against the ProductSchema
     });
   }
 
-  // Deletes a product by its ID
-  async delete(id: string): Promise<void> {
-    return this.http.delete<void>(`/products/${id}`);
+  // Deletes a product by its code
+  async delete(code: string): Promise<void> {
+    return this.http.delete<void>(`/products/${code}`);
   }
 }
 

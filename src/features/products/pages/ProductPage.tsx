@@ -35,7 +35,7 @@ export function ProductPage() {
     if (!controller.editModal.item) return;
 
     updateProductMutation.mutate(
-      { id: controller.editModal.item.id, data: values },
+      { code: controller.editModal.item.code, data: values }, // Use code for update
       {
         onSuccess: () => {
           notifications.show({

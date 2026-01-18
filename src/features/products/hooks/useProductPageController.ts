@@ -23,7 +23,7 @@ const INITIAL_PRODUCT_FILTERS: IProductFilter = {
 };
 
 export const defaultVisibleProductColumns = [
-  'id',
+  'code', // Changed from 'id' to 'code'
   'title',
   'price',
   'stock',
@@ -60,33 +60,33 @@ export const useProductPageController = (): ICrudController<ProductType> => {
 
   const confirmDelete = (product: ProductType) => {
     notifications.show({
-      id: `delete-product-${product.id}`,
+      id: `delete-product-${product.code}`, // Use code for notification ID
       color: 'red',
       title: 'Delete Product',
-      message: `Are you sure you want to delete product "${product.title}"?`,
+      message: `Are you sure you want to delete product "${product.title}" (${product.code})?`, // Include code in message
       autoClose: false,
       withCloseButton: true,
-      onClose: () => notifications.hide(`delete-product-${product.id}`),
+      onClose: () => notifications.hide(`delete-product-${product.code}`),
       action: {
         label: 'Delete',
         onClick: () => {
-          deleteProductMutation.mutate(product.id, {
+          deleteProductMutation.mutate(product.code, { // Use code for mutation
             onSuccess: () => {
               notifications.update({
-                id: `delete-product-${product.id}`,
+                id: `delete-product-${product.code}`,
                 color: 'green',
                 title: 'Product Deleted',
-                message: `Product "${product.title}" has been deleted successfully.`,
+                message: `Product "${product.title}" (${product.code}) has been deleted successfully.`,
                 icon: null,
                 autoClose: 3000,
               });
             },
             onError: (err) => {
               notifications.update({
-                id: `delete-product-${product.id}`,
+                id: `delete-product-${product.code}`,
                 color: 'red',
                 title: 'Deletion Failed',
-                message: `Failed to delete product "${product.title}": ${err.message}`,
+                message: `Failed to delete product "${product.title}" (${product.code}): ${err.message}`,
                 icon: null,
                 autoClose: 5000,
               });
@@ -99,7 +99,7 @@ export const useProductPageController = (): ICrudController<ProductType> => {
 
   const { columns, allColumns } = useProductColumns({
     visibleColumns,
-    onView: (product) => navigate(`/products/${product.id}`), // Assuming a view route
+    onView: (product) => navigate(`/products/${product.code}`), // Navigate using code
     onEdit: handleEditClick,
     onDelete: confirmDelete,
   });

@@ -227,8 +227,8 @@ const InfoRow = ({
 );
 
 const UserViewPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const { data, isLoading, isError, error, refetch, isFetching } = useGetUser(id);
+  const { code } = useParams<{ code: string }>(); // Changed from id to code
+  const { data, isLoading, isError, error, refetch, isFetching } = useGetUser(code); // Pass code to hook
 
   return (
     <ViewPageLayout
@@ -266,10 +266,10 @@ const UserViewPage: React.FC = () => {
 
                   <Group gap="xs" wrap="wrap">
                     <Text size="sm" c="dimmed">
-                      User ID:
+                      User Code: // Changed from User ID to User Code
                     </Text>
                     <Anchor size="sm" underline="hover">
-                      {data.id}
+                      {data.code} // Displaying code instead of id
                     </Anchor>
                   </Group>
 
@@ -301,7 +301,7 @@ const UserViewPage: React.FC = () => {
                 </Grid.Col>
 
                 <Grid.Col span={{ base: 12, sm: 6 }}>
-                  <InfoRow icon={<IconId size={18} />} label="User ID" value={data.id} />
+                  <InfoRow icon={<IconId size={18} />} label="User Code" value={data.code} /> // Changed to User Code and displaying data.code
                 </Grid.Col>
               </Grid>
             </Grid.Col>

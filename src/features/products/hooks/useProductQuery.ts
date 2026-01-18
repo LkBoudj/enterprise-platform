@@ -20,11 +20,11 @@ export const useGetProducts = (filters: IBaseFilter) => {
 // 🟢 READ (GET) - Single Product
 // ==============================
 
-export const useGetProduct = (id?: string) => {
+export const useGetProduct = (code?: string) => {
   return useQuery({
-    queryKey: ['products', id],
-    enabled: !!id, // Only run if ID exists
-    queryFn: ({ signal }) => productService.getById(id as string, signal),
+    queryKey: ['products', code],
+    enabled: !!code, // Only run if CODE exists
+    queryFn: ({ signal }) => productService.getById(code as string, signal),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
@@ -48,14 +48,14 @@ export const useCreateProduct = () => {
 // ==============================
 
 interface UpdateProductParams {
-  id: string;
+  code: string; // Changed from id to code
   data: UpdateProductDto;
 }
 
 export const useUpdateProduct = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: UpdateProductParams) => productService.update(id, data),
+    mutationFn: ({ code, data }: UpdateProductParams) => productService.update(code, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
     },
@@ -69,7 +69,7 @@ export const useUpdateProduct = () => {
 export const useDeleteProduct = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => productService.delete(id),
+    mutationFn: (code: string) => productService.delete(code), // Changed from id to code
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
     },
