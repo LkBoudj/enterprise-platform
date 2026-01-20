@@ -1,20 +1,20 @@
 import { ReactNode } from 'react';
-import { Button, Group, Modal, LoadingOverlay } from '@mantine/core';
-import { IconPlus, IconDownload, IconUpload } from '@tabler/icons-react';
+import { IconDownload, IconPlus, IconUpload } from '@tabler/icons-react';
+import { Button, Group, Modal } from '@mantine/core';
+import { ICrudController } from '@/types/crud.types';
 import DataTablePage from './globaDataTable/DataTablePage';
 import { GlobalFilterBar } from './globaDataTable/GlobalFilterBar';
-import { ICrudController } from '@/types/crud.types';
+import { IRowContextExpansionProps } from '@/types';
 
 interface GenericCrudPageProps<T> {
   title: string;
   controller: ICrudController<T>;
-  
-  // نمرر مكونات الفورم كـ Props
   CreateForm: React.ComponentType<{ onClose: () => void }>;
   EditForm: React.ComponentType<{ item: T; onClose: () => void }>;
-  
-  // اختياري: أزرار إضافية
-  extraHeaderActions?: ReactNode;
+  headerRight?: ReactNode;
+  statsGroup?: React.ReactNode;
+   rowExceptionContent?: (params: IRowContextExpansionProps<T>) => React.ReactNode;
+
 }
 
 export function GenericCrudPage<T extends { id: string | number }>({
@@ -22,39 +22,33 @@ export function GenericCrudPage<T extends { id: string | number }>({
   controller,
   CreateForm,
   EditForm,
-  extraHeaderActions
+  headerRight,
+  statsGroup,
+  rowExceptionContent
+
 }: GenericCrudPageProps<T>) {
-  
-  const { 
-    records, total, isLoading, page, limit, 
-    actions, filters, visibleColumns, internalSelected, 
-    columns, allColumns, createModal, editModal 
+  const {
+    records,
+    total,
+    isLoading,
+    page,
+    limit,
+    actions,
+    filters,
+    visibleColumns,
+    internalSelected,
+    columns,
+    allColumns,
+    createModal,
+    editModal,
+
   } = controller;
 
   return (
     <>
       <DataTablePage
         title={title}
-        // 1. Header Standard Buttons
-        headerRight={
-          <Group>
-            {extraHeaderActions}
-            
-            <Button leftSection={<IconUpload size={18} />} variant="light" color="gray" size="sm">
-              Import
-            </Button>
-            <Button size="sm" leftSection={<IconDownload size={18} />} variant="light" color="blue">
-              Export
-            </Button>
-            
-            {/* زر الإضافة السحري */}
-            <Button onClick={createModal.open} size="sm" leftSection={<IconPlus size={18} />} variant="light" color="teal">
-              Add New
-            </Button>
-          </Group>
-        }
-
-        // 2. ربط البيانات تلقائياً
+        headerRight={headerRight}
         records={records}
         columns={columns}
         allColumns={allColumns}
@@ -69,18 +63,18 @@ export function GenericCrudPage<T extends { id: string | number }>({
         setVisibleColumns={actions.setVisibleColumns}
         selectedRecords={internalSelected}
         onSelectedRecordsChange={actions.setInternalSelected}
-        
         // Sorting & Filtering
         order={filters.order}
         sortBy={filters.sortBy}
         onSortingChange={actions.setOrder}
         renderFilterBar={(p) => <GlobalFilterBar {...p} />}
-      />
-
-      
-      <Modal 
-        opened={createModal.opened} 
-        onClose={createModal.close} 
+        rowExceptionContent={rowExceptionContent}
+      >
+        {statsGroup && statsGroup}
+      </DataTablePage>
+      <Modal
+        opened={createModal.opened}
+        onClose={createModal.close}
         title={`Create New ${title}`} // مثال: Create New Product
         centered
         closeOnClickOutside={false}

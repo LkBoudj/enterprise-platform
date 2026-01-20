@@ -5,12 +5,18 @@ export interface SideBarProps {
   toggle?: () => void;
 }
 
-export interface NavLinkProps {
+export interface BaseNavItemProps {
   icon: TablerIcon;
   label: string;
-  to: string;
   badge?: number;
   collapsed?: boolean;
+}
+
+export interface NavItemProps extends BaseNavItemProps {
+  onClick?: () => void;
+}
+export interface NavLinkProps extends BaseNavItemProps {
+  to: string;
 }
 
 export interface NavGroupProps {

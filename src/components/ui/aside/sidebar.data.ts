@@ -1,31 +1,63 @@
-import {
-  IconChartBar,
-  IconDashboard,
-  IconDatabase,
-  IconHelp,
-  IconSettings,
-  IconShield,
-  IconUsers,
-  IconPackage, // Import IconPackage for Products
-} from '@tabler/icons-react';
+import { IconLayoutDashboardFilled, IconShieldFilled, IconSettingsFilled, IconHelpOctagonFilled, IconCloudComputingFilled, IconChartDots3Filled, IconUserFilled } from "@tabler/icons-react";
 
+
+/**
+ * الروابط الأساسية: تم استخدام أيقونات Filled بالكامل لتعزيز التباين البصري.
+ */
 export const MAIN_LINKS = [
-  { icon: IconDashboard, label: 'Dashboard', to: '/' },
-  { icon: IconUsers, label: 'Users', to: '/users', badge: 3 },
-  { icon: IconPackage, label: 'Products', to: '/products' }, // Added Products link
-  { icon: IconChartBar, label: 'Analytics', to: '/analytics' },
-  { icon: IconDatabase, label: 'Data', to: '/data' },
-  { icon: IconShield, label: 'Security', to: '/security' },
+  { 
+    icon: IconLayoutDashboardFilled, 
+    label: 'Dashboard', 
+    to: '/' 
+  },
+  { 
+    icon: IconUserFilled, 
+    label: 'Users', 
+    to: '/users', 
+    badge: 3 
+  },
+  { 
+    icon: IconChartDots3Filled
+, 
+    label: 'Analytics', 
+    to: '/analytics' 
+  },
+  { 
+    icon: IconCloudComputingFilled, 
+    label: 'Data Storage', 
+    to: '/data' 
+  },
+  { 
+    icon: IconShieldFilled, 
+    label: 'Security', 
+    to: '/security' 
+  },
 ];
 
+/**
+ * الروابط الثانوية: متوافقة مع النمط الممتلئ.
+ */
 export const SECONDARY_LINKS = [
-  { icon: IconSettings, label: 'Settings', to: '/settings' },
-  { icon: IconHelp, label: 'Help & Support', to: '/support' },
+  { 
+    icon: IconSettingsFilled, 
+    label: 'Settings', 
+    to: '/settings' 
+  },
+  { 
+    icon: IconHelpOctagonFilled, 
+    label: 'Help & Support', 
+    to: '/support' 
+  },
 ];
 
+/**
+ * بيانات المستخدم: إضافة حالة "متصل" لتعزيز التفاعل الشبابي في الواجهة.
+ */
 export const MOCK_USER = {
   name: 'Alex Johnson',
   email: 'alex.admin@company.com',
-  role: 'Admin',
+  role: 'Administrator',
   initials: 'AJ',
+  status: 'online', // تظهر كنقطة Success برتقالية أو خضراء
+  avatar: 'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-1.png',
 };

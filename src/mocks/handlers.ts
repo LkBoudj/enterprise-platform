@@ -1,11 +1,9 @@
 import { http, HttpResponse, delay } from 'msw';
-import { users } from './data/users';
-import { mockProducts } from './data/products';
-import { ProductType } from '@/features/products/validation/product.schema';
-import { UserType } from '@/features/users/validation/user.schema'; // Import UserType
+import { users as initialUsers } from './data/users'; // Rename import to avoid conflict
+import { UserType } from '@/features/users/validation/user.schema';
 
-// 2. Initial Mock Data (The "Database") for Products
-let products: ProductType[] = [...mockProducts];
+// Create a mutable copy of the users array
+let mockUsers = [...initialUsers];
 
 export const handlers = [
   // ==========================================
@@ -21,9 +19,9 @@ export const handlers = [
     const q = url.searchParams.get('q')?.toLowerCase();
 
     // Filter
-    let filteredData = users;
+    let filteredData = mockUsers;
     if (q) {
-      filteredData = users.filter((user) =>
+      filteredData = mockUsers.filter((user) =>
         user.name.toLowerCase().includes(q) ||
         user.email.toLowerCase().includes(q) ||
         (user.code && user.code.toLowerCase().includes(q)) // Filter by code
@@ -47,11 +45,11 @@ export const handlers = [
   }),
 
   // ==========================================
-  // 🟢 2. READ ONE User (GET /:code)
+  // 🟢 2. READ ONE User (GET /:id)
   // ==========================================
-  http.get('*/users/:code', async ({ params }) => {
-    const { code } = params;
-    const user = users.find((u) => u.code === code);
+  http.get('*/users/:id', async ({ params }) => {
+    const { id } = params;
+    const user = mockUsers.find((u) => u.id === id);
 
     if (!user) {
       return new HttpResponse(null, { status: 404 });
@@ -72,154 +70,60 @@ export const handlers = [
       // Generate fake ID and Metadata
       id: Math.floor(Math.random() * 100000).toString(),
       code: Math.random().toString(36).substring(2, 8).toUpperCase(), // Generate unique code
-      lastActive: new Date().toISOString(),
-      photo: null,
+      photo: undefined, // Use undefined instead of null
       name: newUser.name || 'Unknown',
       email: newUser.email || '',
       role: newUser.role || 'User',
       status: newUser.status || 'active',
       phone: newUser.phone || '',
       country: newUser.country || '',
+      lastActive: new Date(),
     };
 
     // Add to the TOP of the array
-    users.unshift(createdUser);
+    mockUsers.unshift(createdUser);
 
     return HttpResponse.json(createdUser, { status: 201 });
   }),
 
   // ==========================================
-  // 🔵 4. UPDATE User (PUT /:code)
+  // 🔵 4. UPDATE User (PUT /:id)
   // ==========================================
-  http.put('*/users/:code', async ({ request, params }) => {
+  http.put('*/users/:id', async ({ request, params }) => {
     await delay(500);
 
-    const { code } = params;
+    const { id } = params;
     const updates = (await request.json()) as Partial<UserType>;
 
-    const userIndex = users.findIndex((u) => u.code === code);
+    const userIndex = mockUsers.findIndex((u) => u.id === id);
 
     if (userIndex === -1) {
       return new HttpResponse(null, { status: 404 });
     }
 
     // Merge existing user with updates
-    users[userIndex] = { ...users[userIndex], ...updates };
+    mockUsers[userIndex] = { ...mockUsers[userIndex], ...updates };
 
-    return HttpResponse.json(users[userIndex]);
+    return HttpResponse.json(mockUsers[userIndex]);
   }),
 
   // ==========================================
-  // 🔴 5. DELETE User (DELETE /:code)
+  // 🔴 5. DELETE User (DELETE /:id)
   // ==========================================
-  http.delete('*/users/:code', async ({ params }) => {
+  http.delete('*/users/:id', async ({ params }) => {
     await delay(400);
 
-    const { code } = params;
+    const { id } = params;
     
     // Check if exists
-    const exists = users.some((u) => u.code === code);
+    const exists = mockUsers.some((u) => u.id === id);
     if (!exists) {
       return new HttpResponse(null, { status: 404 });
     }
 
     // Remove from array
-    users = users.filter((u) => u.code !== code);
+    mockUsers = mockUsers.filter((u) => u.id !== id);
 
-    return HttpResponse.json({ success: true, code });
-  }),
-
-  // ==========================================
-  // PRODUCTS API HANDLERS
-  // ==========================================
-
-  // 🟢 READ ALL Products (GET) with Pagination & Search
-  http.get('*/products', async ({ request }) => {
-    await delay(300);
-
-    const url = new URL(request.url);
-    const page = Number(url.searchParams.get('page') || 1);
-    const limit = Number(url.searchParams.get('limit') || 10);
-    const title = url.searchParams.get('title')?.toLowerCase();
-    const code = url.searchParams.get('code')?.toLowerCase(); // Filter by code
-
-    let filteredProducts = products;
-    if (title) {
-      filteredProducts = products.filter((product) =>
-        product.title.toLowerCase().includes(title)
-      );
-    }
-    if (code) {
-      filteredProducts = filteredProducts.filter((product) =>
-        product.code.toLowerCase().includes(code)
-      );
-    }
-
-    const start = (page - 1) * limit;
-    const end = start + limit;
-    const paginatedProducts = filteredProducts.slice(start, end);
-
-    return HttpResponse.json({
-      data: paginatedProducts,
-      meta: {
-        total: filteredProducts.length,
-        page,
-        limit,
-        lastPage: Math.ceil(filteredProducts.length / limit),
-      },
-    });
-  }),
-
-  // 🟢 READ ONE Product (GET /:code)
-  http.get('*/products/:code', async ({ params }) => {
-    const { code } = params;
-    const product = products.find((p) => p.code === code);
-
-    if (!product) {
-      return new HttpResponse(null, { status: 404 });
-    }
-
-    return HttpResponse.json(product);
-  }),
-
-  // 🟡 CREATE Product (POST)
-  http.post('*/products', async ({ request }) => {
-    await delay(500);
-    const newProduct = (await request.json()) as ProductType; // Expecting a full product without ID
-    const createdProduct: ProductType = {
-      ...newProduct,
-      id: Math.random().toString(36).substring(2, 15), // Simple unique ID
-      code: Math.random().toString(36).substring(2, 8).toUpperCase(), // Generate unique code
-    };
-    products.unshift(createdProduct); // Add to the top
-    return HttpResponse.json(createdProduct, { status: 201 });
-  }),
-
-  // 🔵 UPDATE Product (PUT /:code)
-  http.put('*/products/:code', async ({ request, params }) => {
-    await delay(500);
-    const { code } = params;
-    const updates = (await request.json()) as Partial<ProductType>;
-
-    const productIndex = products.findIndex((p) => p.code === code);
-    if (productIndex === -1) {
-      return new HttpResponse(null, { status: 404 });
-    }
-
-    products[productIndex] = { ...products[productIndex], ...updates };
-    return HttpResponse.json(products[productIndex]);
-  }),
-
-  // 🔴 DELETE Product (DELETE /:code)
-  http.delete('*/products/:code', async ({ params }) => {
-    await delay(400);
-    const { code } = params;
-    const exists = products.some((p) => p.code === code);
-    if (!exists) {
-      return new HttpResponse(null, { status: 404 });
-    }
-
-    products = products.filter((p) => p.code !== code);
-    return HttpResponse.json({ success: true, code });
+    return HttpResponse.json({ success: true, id });
   }),
 ];

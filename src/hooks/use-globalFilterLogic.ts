@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDebouncedValue } from '@mantine/hooks';
 
 export interface UseGlobalFilterLogicProps {
@@ -28,17 +28,9 @@ export const useGlobalFilterLogic = ({
     if (debouncedSearch !== q) {
       setSearch?.(debouncedSearch);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch]);
+  }, [debouncedSearch, q, setSearch]);
 
-  // 4. Sync: Parent (URL) -> Local State
-  // Handles external changes like Browser Back Button or URL pasting
-  useEffect(() => {
-    if (q !== undefined && q !== searchValue) {
-      setSearchValue(q);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [q]);
+  
 
   // 5. Handlers
   const handleClear = useCallback(() => {

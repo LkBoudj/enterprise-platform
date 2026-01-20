@@ -1,7 +1,6 @@
 import { httpClient } from '@/core/network/axios.adapter';
 import { IHttpClient } from '@/core/network/http.types';
 import { ApiResponse, IBaseFilter } from '@/types';
-import { createApiResponseSchema } from '@/validation/validation.helpers';
 import { CreateUserDto, UserSchema, UserType } from '../validation/user.schema'; // Ensure this path matches your structure
 
 export class UserService {
@@ -17,8 +16,8 @@ export class UserService {
   }
 
   // 🟢 READ ONE
-  async getUserById(code: string): Promise<UserType> {
-    return this.http.get<UserType>(`/users/${code}`, {
+  async getUserById(id: string): Promise<UserType> {
+    return this.http.get<UserType>(`/users/${id}`, {
       schema: UserSchema, // FORCE VALIDATION: Must be a single User
     });
   }
@@ -32,15 +31,15 @@ export class UserService {
 
   // 🔵 UPDATE
   // We use Partial<CreateUserDto> to allow updating specific fields
-  async updateUser(code: string, data: Partial<CreateUserDto>): Promise<UserType> {
-    return this.http.put<UserType>(`/users/${code}`, data, {
+  async updateUser(id: string, data: Partial<CreateUserDto>): Promise<UserType> {
+    return this.http.put<UserType>(`/users/${id}`, data, {
       schema: UserSchema, // Validate the updated user response
     });
   }
 
   // 🔴 DELETE
-  async deleteUser(code: string): Promise<void> {
-    return this.http.delete<void>(`/users/${code}`);
+  async deleteUser(id: string): Promise<void> {
+    return this.http.delete<void>(`/users/${id}`);
   }
 }
 

@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { ActionIcon, Menu, useMantineTheme } from '@mantine/core';
+import { ActionIcon, Menu } from '@mantine/core';
 import { IconDots, IconEdit, IconEye, IconTrash } from '@tabler/icons-react';
 
 export interface GlobalActionMenuProps {
@@ -31,8 +31,6 @@ export const GlobalActionMenu = ({
   deleteLabel = 'Delete',
   children,
 }: GlobalActionMenuProps) => {
-  const theme = useMantineTheme();
-  
   // Check if we have any "main" content (View, Edit, or Custom) to decide if we need a divider before Delete
   const hasMainContent = !!onView || !!onEdit || !!children;
 

@@ -11,7 +11,6 @@ import {
 } from '@mantine/core';
 import ColumnSelector, { ColumnOption } from './ColumnSelector';
 import { useGlobalFilterLogic } from '@/hooks/use-globalFilterLogic';
-import { OrderType } from './GlobalDataTable';
 import { SearchType } from '@/types/crud.types';
 
 

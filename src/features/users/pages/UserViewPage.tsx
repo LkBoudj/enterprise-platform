@@ -266,10 +266,10 @@ const UserViewPage: React.FC = () => {
 
                   <Group gap="xs" wrap="wrap">
                     <Text size="sm" c="dimmed">
-                      User Code: // Changed from User ID to User Code
+                      {/* User Code: Changed from User ID to User Code */}
                     </Text>
                     <Anchor size="sm" underline="hover">
-                      {data.code} // Displaying code instead of id
+                      {data.code} {/* Displaying code instead of id */}
                     </Anchor>
                   </Group>
 
@@ -301,7 +301,7 @@ const UserViewPage: React.FC = () => {
                 </Grid.Col>
 
                 <Grid.Col span={{ base: 12, sm: 6 }}>
-                  <InfoRow icon={<IconId size={18} />} label="User Code" value={data.code} /> // Changed to User Code and displaying data.code
+                  <InfoRow icon={<IconId size={18} />} label="User Code" value={data.code} /> {/* Changed to User Code and displaying data.code */}
                 </Grid.Col>
               </Grid>
             </Grid.Col>

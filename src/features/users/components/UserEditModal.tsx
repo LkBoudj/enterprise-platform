@@ -11,7 +11,9 @@ interface UserEditModalProps {
 
 export const UserEdit = ({ opened, onClose, user }: UserEditModalProps) => {
   // حماية: لا نرسم المكون إذا لم يكن هناك مستخدم (لتجنب الأخطاء)
-  if (!user) return null;
+  if (!user) {
+    return null;
+  }
 
   return <Content opened={opened} onClose={onClose} user={user} />;
 };

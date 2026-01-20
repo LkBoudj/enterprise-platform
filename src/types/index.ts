@@ -28,3 +28,11 @@ export interface ApiResponse<T> {
     lastPage: number;
   };
 }
+
+export interface IRowContextExpansionProps<T> {
+
+    record: T;
+    index: number;
+    collapse: () => void;
+
+}

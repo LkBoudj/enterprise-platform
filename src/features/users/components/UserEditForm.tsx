@@ -1,4 +1,4 @@
-import { Button, Group, LoadingOverlay, Modal, Select, Stack, TextInput } from '@mantine/core';
+import { Button, Group, Select, Stack, TextInput } from '@mantine/core';
 import { useEditUserController } from '../hooks/useEditUserController';
 import { UserType } from '../validation/user.schema';
 
@@ -8,7 +8,9 @@ interface UserEditFormProps {
 }
 
 export const UserEditForm = ({ onClose, item }: UserEditFormProps) => {
-  if (!item) return null;
+  if (!item) {
+    return null;
+  }
 
   return <Content onClose={onClose} user={item} />;
 };

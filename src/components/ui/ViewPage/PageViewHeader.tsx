@@ -62,7 +62,9 @@ const PageViewHeader: React.FC<Props> = ({
   const navigate = useNavigate();
 
   const handleBack = () => {
-    if (onBack) return onBack();
+    if (onBack) {
+      return onBack();
+    }
     navigate(-1);
   };
 
@@ -93,7 +95,9 @@ const PageViewHeader: React.FC<Props> = ({
 
       <Group gap="sm">
         {actions?.map((a, idx) => {
-          if (a.type !== 'button') return null;
+          if (a.type !== 'button') {
+            return null;
+          }
           return (
             <Button
               key={idx}
@@ -118,8 +122,12 @@ const PageViewHeader: React.FC<Props> = ({
 
             <Menu.Dropdown>
               {menuActions?.map((a, idx) => {
-                if (a.type === 'divider') return <Menu.Divider key={idx} />;
-                if (a.type !== 'menu') return null;
+                if (a.type === 'divider') {
+                  return <Menu.Divider key={idx} />;
+                }
+                if (a.type !== 'menu') {
+                  return null;
+                }
 
                 return (
                   <Menu.Item

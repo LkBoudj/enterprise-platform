@@ -1,4 +1,4 @@
-import { Button, Group, Modal, Select, Stack, TextInput } from '@mantine/core';
+import { Button, Group, Select, Stack, TextInput } from '@mantine/core';
 import { useCreateUserController } from '../hooks/useCreateUserController';
 
 interface UserCreateFormProps {

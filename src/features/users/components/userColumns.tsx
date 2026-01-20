@@ -42,6 +42,7 @@ export const useUserColumns = ({ visibleColumns, onView, onEdit, onDelete }: Use
         hidden: !visibleColumns.includes('code'),
         sortable: true,
         width: 100,
+       
       },
       {
         accessor: 'name',
@@ -118,7 +119,9 @@ export const useUserColumns = ({ visibleColumns, onView, onEdit, onDelete }: Use
         sortable: true,
         width: 150,
         render: ({ lastActive }) => {
-            if (!lastActive) return <Text c="dimmed">-</Text>;
+            if (!lastActive) {
+              return <Text c="dimmed">-</Text>;
+            }
             // Using Intl for high performance formatting
             return new Intl.DateTimeFormat('en-GB', { 
                 day: '2-digit', month: 'short', year: 'numeric' 

@@ -1,3 +1,4 @@
+import { PropsWithChildren } from 'react';
 import { Stack } from '@mantine/core';
 import HeaderPage from '../HeaderPage';
 import { GlobalDataTable, GlobalTableProps } from './GlobalDataTable';
@@ -7,11 +8,10 @@ import { GlobalFilterBarProps } from './GlobalFilterBar';
 type OmittedProps = 'children' | 'rightComponent';
 
 export interface DataTablePageProps<TRecord>
-  extends GlobalTableProps<TRecord>, Omit<GlobalFilterBarProps, OmittedProps> {
+  extends GlobalTableProps<TRecord>, Omit<GlobalFilterBarProps, OmittedProps>, PropsWithChildren {
   title: string;
   headerRight?: React.ReactNode;
   setLimit?: (limit: number) => void;
-
   // جعلنا التايب أكثر وضوحاً
   renderFilterBar?: (props: GlobalFilterBarProps) => React.ReactNode;
 }
@@ -21,25 +21,22 @@ export default function DataTablePage<TRecord>(props: DataTablePageProps<TRecord
     title,
     headerRight,
     renderFilterBar,
-
-    // Props المشتركة التي نحتاجها هنا وهناك
     setPage,
     setSearch,
     setLimit,
-    visibleColumns, // <--- تم استخراجه
+    visibleColumns, 
     allColumns,
     setVisibleColumns,
     resetFilter,
     q,
-
-    // باقي الخصائص تذهب للجدول مباشرة
+    children,
     ...restProps
   } = props;
 
   return (
     <Stack gap="md">
- 
       <HeaderPage title={title} rightComponent={headerRight} />
+      {children}
       {renderFilterBar?.({
         setPage,
         setSearch,
@@ -49,7 +46,7 @@ export default function DataTablePage<TRecord>(props: DataTablePageProps<TRecord
         setVisibleColumns,
         resetFilter,
       } as GlobalFilterBarProps)}
-      
+
       <GlobalDataTable<TRecord> setPage={setPage} setLimit={setLimit} {...restProps} />
     </Stack>
   );

@@ -1,0 +1,179 @@
+Scope 1
+
+This file only covers what’s in the Zod v4 docs pages for JSON Schema conversion and Codecs. 12
+Package assumed: zod (import as import * as z from "zod";). 12
+Core idea 1
+
+Zod schemas can be converted to JSON Schema, and JSON Schemas can be converted back into Zod schemas. 1
+JSON Schema conversion (Zod ↔ JSON Schema) 1
+
+Convert JSON Schema → Zod schema with z.fromJSONSchema() (experimental). 1
+Convert Zod schema → JSON Schema with z.toJSONSchema(). 1
+z.fromJSONSchema() (experimental) 1
+
+z.fromJSONSchema() converts a JSON Schema into a Zod schema. 1
+It is experimental and not part of the stable API. 1
+ts
+import * as z from "zod";
+
+const jsonSchema = {
+  type: "object",
+  properties: {
+    name: { type: "string" },
+    age: { type: "number" },
+  },
+  required: ["name", "age"],
+};
+
+const zodSchema = z.fromJSONSchema(jsonSchema);
+1
+
+z.toJSONSchema() (Zod → JSON Schema) 1
+
+Use z.toJSONSchema(schema) to convert a Zod schema into JSON Schema. 1
+ts
+import * as z from "zod";
+
+const schema = z.object({
+  name: z.string(),
+  age: z.number(),
+});
+
+z.toJSONSchema(schema);
+1
+
+Unrepresentable types 1
+
+Some Zod types can’t be reasonably represented in JSON Schema. 1
+Examples listed as unrepresentable: z.bigint(), z.int64(), z.symbol(), z.undefined(), z.void(), z.date(), z.map(), z.set(), z.transform(), z.nan(), z.custom(). 1
+z.toJSONSchema(schema, params) 1
+
+z.toJSONSchema() accepts a second argument to customize conversion. 1
+Parameters include: target, metadata, unrepresentable, cycles, reused, uri. 1
+ToJSONSchemaParams.target 1
+
+target controls the output dialect: "draft-2020-12" (default), "draft-07", "draft-04", "openapi-3.0". 1
+ToJSONSchemaParams.metadata 1
+
+metadata can be a registry used to look up metadata for each schema. 1
+Any schema with an id property will be extracted as a $def. 1
+ToJSONSchemaParams.unrepresentable 1
+
+"throw" (default): unrepresentable types throw an error. 1
+"any": unrepresentable types become {}. 1
+ToJSONSchemaParams.cycles 1
+
+"ref" (default): cycles are broken using $defs. 1
+"throw": cycles throw an error if encountered. 1
+ToJSONSchemaParams.reused 1
+
+"inline" (default): reused schemas are inlined. 1
+"ref": reused schemas are extracted as $defs. 1
+ToJSONSchemaParams.uri 1
+
+uri converts id values to URIs for external $refs. 1
+Default is (id) => id. 1
+io (input vs output JSON Schema) 1
+
+Some schemas have different input and output types (examples: ZodPipe, ZodDefault, coerced primitives). 1
+By default, z.toJSONSchema() represents the output type. 1
+Use { io: "input" } to extract the input type instead. 1
+ts
+const mySchema = z.string().transform(val => val.length).pipe(z.number());
+
+const jsonSchemaOut = z.toJSONSchema(mySchema);
+// => { type: "number" }
+
+const jsonSchemaIn = z.toJSONSchema(mySchema, { io: "input" });
+// => { type: "string" }
+1
+
+override hook (customize generated JSON Schema) 1
+
+z.toJSONSchema() supports an override function that can directly modify ctx.jsonSchema. 1
+Unrepresentable types throw an Error before override runs, unless you set unrepresentable: "any". 1
+ts
+// support z.date() as ISO datetime strings
+const result = z.toJSONSchema(z.date(), {
+  unrepresentable: "any",
+  override: (ctx) => {
+    const def = ctx.zodSchema._zod.def;
+    if (def.type === "date") {
+      ctx.jsonSchema.type = "string";
+      ctx.jsonSchema.format = "date-time";
+    }
+  },
+});
+1
+
+String formats mapping (Zod → JSON Schema) 1
+
+These Zod string schemas map to JSON Schema format: 1
+
+z.email() → { type: "string", format: "email" } 1
+z.iso.datetime() → { type: "string", format: "date-time" } 1
+z.iso.date() → { type: "string", format: "date" } 1
+z.iso.time() → { type: "string", format: "time" } 1
+z.iso.duration() → { type: "string", format: "duration" } 1
+z.ipv4() → { type: "string", format: "ipv4" } 1
+z.ipv6() → { type: "string", format: "ipv6" } 1
+z.uuid() → { type: "string", format: "uuid" } 1
+z.guid() → { type: "string", format: "uuid" } 1
+z.url() → { type: "string", format: "uri" } 1
+z.base64() is represented using contentEncoding: "base64". 1
+
+Other string formats are represented using pattern (examples listed): z.base64url(), z.cuid(), z.emoji(), z.nanoid(), z.cuid2(), z.ulid(), z.cidrv4(), z.cidrv6(), z.mac(). 1
+
+Numeric mapping (Zod → JSON Schema) 1
+
+z.number() → { type: "number" } 1
+z.float32() / z.float64() → { type: "number", exclusiveMinimum: ..., exclusiveMaximum: ... } 1
+z.int() → { type: "integer" } 1
+z.int32() → { type: "integer", exclusiveMinimum: ..., exclusiveMaximum: ... } 1
+Objects and additionalProperties 1
+
+By default, z.object() produces JSON Schema with additionalProperties: false. 1
+This matches Zod’s default behavior where plain z.object() strips additional properties. 1
+Codecs (bidirectional transforms) 2
+
+You can use z.encode() and z.decode() with any schema (it does not have to be a ZodCodec). 2
+Codecs can be nested inside objects, arrays, pipes, etc. 2
+.parse() and .decode() behave the same at runtime, but differ in TypeScript types: 2
+.parse() accepts unknown. 2
+.decode() / .encode() have strongly-typed inputs. 2
+Example: nesting a codec in an object 2
+
+ts
+const payloadSchema = z.object({ 
+  startDate: stringToDate 
+});
+
+payloadSchema.decode({
+  startDate: "2024-01-15T10:30:00.000Z"
+}); // => { startDate: Date }
+2
+
+Async codecs 2
+
+ts
+const asyncCodec = z.codec(z.string(), z.number(), {
+  decode: async (str) => Number(str),
+  encode: async (num) => num.toString(),
+});
+2
+
+Useful codec examples (copy/paste patterns) 2
+
+stringToBigInt 2
+numberToBigInt 2
+isoDatetimeToDate 2
+epochSecondsToDate 2
+epochMillisToDate 2
+json(schema) (JSON string ↔ structured data) 2
+Example: isoDatetimeToDate 2
+
+ts
+const isoDatetimeToDate = z.codec(z.iso.datetime(), z.date(), {
+  decode: (isoString) => new Date(isoString),
+  encode: (date) => date.toISOString(),
+});

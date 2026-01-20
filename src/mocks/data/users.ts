@@ -2,17 +2,19 @@ import { faker } from '@faker-js/faker';
 
 export interface UserType {
   id: string;
+  code: string;
   name: string;
   email: string;
   role: 'Admin' | 'User' | 'Manager';
-  status: 'active' | 'inactive';
-  phone: string;
+  status: 'active' | 'inactive' | 'suspended';
+  phone?: string | null;
   country: string;
-  lastActive: string;
+  photo?: string | null;
+  lastActive?: Date;
 }
 
 const roles: ('Admin' | 'User' | 'Manager')[] = ['Admin', 'User', 'Manager'];
-const statuses: ('active' | 'inactive')[] = ['active', 'inactive'];
+const statuses: ('active' | 'inactive' | 'suspended')[] = ['active', 'inactive', 'suspended'];
 
 export const users: UserType[] = Array.from({ length: 50 }, (_, index) => ({
   id: `${index + 1}`,
@@ -23,5 +25,6 @@ export const users: UserType[] = Array.from({ length: 50 }, (_, index) => ({
   status: faker.helpers.arrayElement(statuses),
   phone: faker.phone.number(),
   country: faker.location.country(),
-  lastActive: faker.date.recent().toISOString(),
+  photo: faker.image.avatar(),
+  lastActive: faker.date.recent(),
 }));

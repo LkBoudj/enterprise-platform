@@ -1,10 +1,10 @@
-import { AppShell, Burger, Group } from '@mantine/core';
+import { AppShell } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Outlet } from 'react-router-dom';
 import { SideBar } from '@/components/ui/aside'; // Ensure path is correct
 
 export default function MainLayout() {
-  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure(false);
+  const [mobileOpened] = useDisclosure(false);
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
 
   return (
@@ -12,7 +12,7 @@ export default function MainLayout() {
       padding="md"
       // header={{ height: 60 }} // Added height for the mobile burger
       navbar={{
-        width: desktopOpened ? 250 : 80, // Dynamic Width
+        width: desktopOpened ? 250 : 60, // Dynamic Width
         breakpoint: 'none',
         collapsed: {
           mobile: !mobileOpened,

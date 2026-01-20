@@ -44,13 +44,13 @@ export const useCreateUser = () => {
 
 // We need an object that contains both CODE and Data
 interface UpdateUserParams {
-  code: string; // Changed from id to code
+  id: string; // Changed from id to code
   data: Partial<CreateUserDto>; // Partial allows sending only changed fields
 }
 
 export const useUpdateUser = () => {
   return useMutation({
-    mutationFn: ({ code, data }: UpdateUserParams) => userService.updateUser(code, data),
+    mutationFn: ({ id, data }: UpdateUserParams) => userService.updateUser(id, data),
   });
 };
 

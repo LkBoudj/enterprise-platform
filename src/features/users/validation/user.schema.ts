@@ -11,10 +11,10 @@ export const UserSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
   email: z.string().email({ message: "Invalid email address" }),
   role: UserRoleEnum,
-  phone: z.string().min(10, { message: "Phone number is too short" }),
+  phone: z.string().optional().nullable(),
   status: UserStatusEnum,
   country: z.string().min(2),
-  photo: z.string().url().optional().or(z.literal('')), // Allows valid URL, empty string, or undefined
+  photo: z.url().optional().or(z.literal('')), // Allows valid URL, empty string, or undefined
   lastActive: z.coerce.date().optional(), // Validates ISO 8601 format
 });
 

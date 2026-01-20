@@ -33,6 +33,7 @@ export const defaultVisibleColumns = [
 ];
 
 export const useUserPageController = () => {
+
   const navigate = useNavigate();
 
   const [createModalOpened, { open: openCreateModal, close: closeCreateModal }] =
@@ -57,12 +58,14 @@ export const useUserPageController = () => {
   const { data, isLoading, isFetching, error } = useGetUsers(filters);
   
   const {confirmDelete} = useDeleteUserController();
+  
   const { columns, allColumns } = useUserColumns({
     visibleColumns,
     onView: (user) => navigate(`/users/${user.code}`), // Navigate using code
     onEdit: handleEditClick, // Example action
     onDelete: confirmDelete, // Example action
   });
+
 
   return {
     // Data Props
@@ -78,7 +81,6 @@ export const useUserPageController = () => {
     allColumns,
     visibleColumns,
     internalSelected,
-
     // State & Actions
     filters,
     actions, // Contains setPage, setSearch, setLimit, etc.
@@ -95,3 +97,5 @@ export const useUserPageController = () => {
     },
   };
 };
+
+

@@ -3,7 +3,6 @@ import {
   GlobalFilterBar,
   GlobalFilterBarProps,
 } from '@/components/ui/globaDataTable/GlobalFilterBar';
-import { IBaseFilter } from '@/types';
 
 export interface UserFilterBarProps extends GlobalFilterBarProps {}
 

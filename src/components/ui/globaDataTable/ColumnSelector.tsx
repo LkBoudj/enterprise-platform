@@ -34,7 +34,9 @@ const ColumnSelector: FC<ColumnSelectorProps> = ({
 
     if (isSelected) {
       // Don't allow deselecting if we reached the minimum limit
-      if (value.length <= minSelected) return;
+      if (value.length <= minSelected) {
+        return;
+      }
       
       // Remove from list
       onChange?.(value.filter((v) => v !== colValue));

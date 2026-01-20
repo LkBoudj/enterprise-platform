@@ -1,0 +1,73 @@
+.tableWrapper {
+  width: 100%;
+  border-radius: var(--mantine-radius-lg);
+  overflow: hidden;
+  /* الوضع الفاتح: أبيض ناصع | الوضع الداكن: اللون المخصص #242424 */
+  background-color: light-dark(#ffffff, #242424);
+  /* حدود ناعمة تتغير حسب الوضع */
+  border: 1px solid light-dark(var(--mantine-color-gray-3), #3d3d3d);
+  transition: border-color 0.2s ease;
+}
+
+.root {
+  background-color: transparent !important;
+}
+
+/* رأس الجدول (Header) */
+.root thead tr th {
+  /* تباين بسيط للرأس لتمييزه عن المحتوى */
+  background-color: light-dark(var(--mantine-color-gray-0),  var(--mantine-color-dark-6)) !important;
+  /* اللون الرمادي للنصوص ليظهر بشكل جيد في الوضعين */
+  color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-5)) !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid light-dark(var(--mantine-color-gray-3), #3d3d3d) !important;
+  padding-top: 16px !important;
+  padding-bottom: 16px !important;
+}
+
+/* الأسطر (Rows) */
+.row {
+  transition: all 0.2s ease;
+  background-color: transparent;
+}
+
+/* تأثير الـ Hover الحديث */
+.row:hover {
+  /* استخدام تظليل برتقالي خفيف جداً (توهج) يتناسب مع الهوية الشبابية */
+  background-color: light-dark(
+    rgba(255, 106, 0, 0.03), 
+    rgba(255, 106, 0, 0.06)
+  ) !important;
+  transform: translateY(-1px); /* حركة بسيطة للأعلى بدلاً من الـ scale للحفاظ على الوضوح */
+}
+
+/* تنسيق الخلايا (Cells) */
+.row td {
+  /* حدود الأسطر ناعمة جداً */
+  border-bottom: 1px solid light-dark(var(--mantine-color-gray-2), #2e2e2e) !important;
+  /* لون النص: أسود ناعم للفاتح | رمادي فاتح للداكن */
+  color: light-dark(var(--mantine-color-gray-9), #e2e2e2);
+  font-size: 14px;
+  padding: 12px 16px !important;
+}
+
+/* تنسيق شريط الترقيم (Pagination) */
+.root :global(.mantine-datatable-pagination) {
+  background-color: light-dark(var(--mantine-color-gray-0),  var(--mantine-color-dark-6));
+  border-top: 1px solid light-dark(var(--mantine-color-gray-3), #3d3d3d);
+  padding: 12px;
+}
+
+/* لون مؤشر الاختيار (Selection Checkbox) */
+.root :global(.mantine-datatable-selection-checkbox) {
+  --mantine-primary-color: var(--mantine-color-orange-6);
+}
+
+/* تأثير التخطيط (Striped) في حال تفعيله */
+.root :global(.mantine-datatable-row-striped) {
+    
+  background-color: light-dark(var(--mantine-color-gray-0), #2a2a2a) !important;
+}

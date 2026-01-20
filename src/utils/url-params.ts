@@ -9,7 +9,9 @@ export function serializeFilters(filters: IBaseFilter): URLSearchParams {
 
   Object.entries(filters).forEach(([key, value]) => {
     // Ignore empty values
-    if (value === undefined || value === null || value === '') return;
+    if (value === undefined || value === null || value === '') {
+      return;
+    }
     
     // Handle arrays (for future multi-select filters)
     if (Array.isArray(value)) {

@@ -1,20 +1,26 @@
-import { ActionIcon, useMantineColorScheme, useComputedColorScheme } from '@mantine/core';
-import { IconSun, IconMoon } from '@tabler/icons-react';
+import {
+  IconBulbFilled,
+  IconMoon,
+  IconMoonFilled,
+  IconSun,
+  IconSunFilled,
+} from '@tabler/icons-react';
+import { ActionIcon, useComputedColorScheme, useMantineColorScheme } from '@mantine/core';
+import { SideItem } from './SidebarLink';
 
-export function ThemeToggle() {
+interface ThemeToggleProps {
+  collapsed?: boolean;
+}
+export function ThemeToggle({ collapsed }: ThemeToggleProps) {
   const { setColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme('light');
 
   return (
-    <ActionIcon
+    <SideItem
+      collapsed={collapsed}
       onClick={() => setColorScheme(computedColorScheme === 'dark' ? 'light' : 'dark')}
-      variant="default"
-      size="lg"
-      radius="md"
-      aria-label="Toggle color scheme"
-      style={{ border: 'none' }}
-    >
-      {computedColorScheme === 'dark' ? <IconSun size={18} /> : <IconMoon size={18} />}
-    </ActionIcon>
+      icon={computedColorScheme === 'dark' ? IconBulbFilled : IconMoonFilled}
+      label="Toggle color scheme"
+    />
   );
 }
