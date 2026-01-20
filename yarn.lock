@@ -537,7 +537,11 @@
   resolved "https://registry.npmjs.org/@keyv/serialize/-/serialize-1.1.1.tgz"
   integrity sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==
 
+<<<<<<< HEAD
 "@mantine/core@>=7.0.0", "@mantine/core@>=8.3", "@mantine/core@8.3.12":
+=======
+"@mantine/core@>=8.3", "@mantine/core@8.3.12":
+>>>>>>> 001d988f968b503505179f8710a929b3c32cf328
   version "8.3.12"
   resolved "https://registry.npmjs.org/@mantine/core/-/core-8.3.12.tgz"
   integrity sha512-bDEoUl4SneltfI1GeEaBk6BVDbLuB/w15YwseAmUvc8ldAbNcsVhxKxY/BdhwqUo6O3L2vhdlb3WwxR1y8741g==
@@ -549,6 +553,7 @@
     react-textarea-autosize "8.5.9"
     type-fest "^4.41.0"
 
+<<<<<<< HEAD
 "@mantine/form@^8.3.12", "@mantine/form@>=7.0.0":
   version "8.3.12"
   resolved "https://registry.npmjs.org/@mantine/form/-/form-8.3.12.tgz"
@@ -596,6 +601,12 @@
     is-node-process "^1.2.0"
     outvariant "^1.4.3"
     strict-event-emitter "^0.5.1"
+=======
+"@mantine/hooks@>=8.3", "@mantine/hooks@8.3.12":
+  version "8.3.12"
+  resolved "https://registry.npmjs.org/@mantine/hooks/-/hooks-8.3.12.tgz"
+  integrity sha512-lMMDzDewd3lUNtJCAHDj3g8On9X5aBl4q6EBwgOixKQSby9RG9ASEpK8oYHundHTm9tzo3MDeXWV/z32oSQWuw==
+>>>>>>> 001d988f968b503505179f8710a929b3c32cf328
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
