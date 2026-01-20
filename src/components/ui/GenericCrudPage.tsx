@@ -47,6 +47,7 @@ export function GenericCrudPage<T extends { id: string | number }>({
   return (
     <>
       <DataTablePage
+  
         title={title}
         headerRight={headerRight}
         records={records}
