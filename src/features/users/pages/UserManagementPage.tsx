@@ -1,8 +1,6 @@
 import { IconDownload, IconPlus, IconUpload } from '@tabler/icons-react';
 import { Button, Group } from '@mantine/core';
 import { GenericCrudPage } from '@/components/ui/GenericCrudPage';
-import { StatsGroup } from '@/components/ui/StatsGroup';
-import { theme } from '@/lib/mantine';
 import { UserCreateForm } from '../components/UserCreateForm';
 import { UserEditForm } from '../components/UserEditForm';
 import { useUserPageController } from '../hooks/useUserPageController';
@@ -36,7 +34,7 @@ export function UserManagementPage() {
           </Button>
         </Group>
       }
-      rowExceptionContent={UserRowExceptionContent}
+      // rowExceptionContent={UserRowExceptionContent}
       statsGroup={<UserStatsGroup />}
       controller={controller}
       CreateForm={UserCreateForm}

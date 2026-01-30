@@ -1,27 +1,34 @@
-import { useMemo } from 'react';
-import { IconCashBanknote, IconPhone, IconMail } from '@tabler/icons-react';
-import { DataTableColumn } from 'mantine-datatable';
-import { Avatar, Badge, Group, Menu, Text } from '@mantine/core';
-import { ColumnOption } from '@/components/ui/globaDataTable/ColumnSelector';
-import { GlobalActionMenu } from '@/components/ui/globaDataTable/GlobalActionMenu';
-import { UserType } from '../validation/user.schema'; // Import Enum for type safety
+import { useMemo } from "react";
+import { IconPhone, IconMail, IconBuilding, IconMapPin } from "@tabler/icons-react";
+import { DataTableColumn } from "mantine-datatable";
+import { Avatar, Badge, Group, Menu, Text } from "@mantine/core";
+import { ColumnOption } from "@/components/ui/globaDataTable/ColumnSelector";
+import { GlobalActionMenu } from "@/components/ui/globaDataTable/GlobalActionMenu";
+import { UserType } from "../validation/user.schema"; // ✅ new type
 
-// 1. Static Configuration (Outside Component for Performance)
-const STATUS_COLORS: Record<string, string> = {
-  active: 'green',
-  inactive: 'gray',
-  suspended: 'red',
+// optional: color for role / gender
+const ROLE_COLORS: Record<string, string> = {
+  admin: "red",
+  moderator: "yellow",
+  user: "blue",
+};
+
+const GENDER_COLORS: Record<string, string> = {
+  male: "blue",
+  female: "pink",
 };
 
 const userColumnOptions: ColumnOption[] = [
-  { value: 'code', label: 'User Code' }, // Add code as an option
-  { value: 'name', label: 'User Info' },
-  { value: 'email', label: 'Email' },
-  { value: 'phone', label: 'Phone' },
-  { value: 'role', label: 'Role' },
-  { value: 'status', label: 'Status' },
-  { value: 'country', label: 'Country' },
-  { value: 'lastActive', label: 'Last Active' },
+  { value: "id", label: "ID" },
+  { value: "userInfo", label: "User Info" }, // avatar + name + username
+  { value: "email", label: "Email" },
+  { value: "phone", label: "Phone" },
+  { value: "role", label: "Role" },
+  { value: "gender", label: "Gender" },
+  { value: "age", label: "Age" },
+  { value: "location", label: "Location" }, // city/country
+  { value: "company", label: "Company" },   // company name/title
+  { value: "birthDate", label: "Birth Date" },
 ];
 
 interface UseUserColumnsProps {
@@ -31,119 +38,193 @@ interface UseUserColumnsProps {
   onDelete?: (user: UserType) => void;
 }
 
-// 2. Refactor to a Custom Hook
 export const useUserColumns = ({ visibleColumns, onView, onEdit, onDelete }: UseUserColumnsProps) => {
-  
   const columns: DataTableColumn<UserType>[] = useMemo(() => {
     return [
       {
-        accessor: 'code', // New column for code
-        title: 'User Code',
-        hidden: !visibleColumns.includes('code'),
+        accessor: "id",
+        title: "ID",
+        hidden: !visibleColumns.includes("id"),
         sortable: true,
-        width: 100,
-       
+        width: 80,
       },
+
       {
-        accessor: 'name',
-        title: 'User',
-        hidden: !visibleColumns.includes('name'),
-        sortable: true,
-        // Improved: Only show Avatar and Name here. Keep it clean.
-        render: ({ name, photo }) => (
-          <Group gap="sm" wrap="nowrap">
-            <Avatar src={photo} alt={name} radius="xl" size="sm" color="blue">
-              {name.charAt(0).toUpperCase()}
-            </Avatar>
-            <Text size="sm" fw={500} truncate>{name}</Text>
-          </Group>
-        ),
+        accessor: "userInfo",
+        title: "User",
+        hidden: !visibleColumns.includes("userInfo"),
+        sortable: true, // sorting will rely on accessor string; if you need custom, handle server-side
+        render: (u) => {
+          const fullName = `${u.firstName} ${u.lastName}`.trim();
+          return (
+            <Group gap="sm" wrap="nowrap">
+              <Avatar src={u.image} alt={fullName} radius="xl" size="sm">
+                {u.firstName?.charAt(0)?.toUpperCase()}
+              </Avatar>
+
+              <div style={{ minWidth: 0 }}>
+                <Text size="sm" fw={600} truncate>
+                  {fullName || "-"}
+                </Text>
+                <Text size="xs" c="dimmed" truncate>
+                  @{u.username}
+                </Text>
+              </div>
+            </Group>
+          );
+        },
       },
-      // 3. Separate Columns for true visibility control
+
       {
-        accessor: 'email',
-        title: 'Email',
-        hidden: !visibleColumns.includes('email'),
+        accessor: "email",
+        title: "Email",
+        hidden: !visibleColumns.includes("email"),
         sortable: true,
         render: ({ email }) => (
           <Group gap={6} wrap="nowrap" c="dimmed">
             <IconMail size={14} />
-            <Text size="sm">{email}</Text>
+            <Text size="sm" truncate>
+              {email}
+            </Text>
           </Group>
         ),
       },
+
       {
-        accessor: 'phone',
-        title: 'Phone',
-        hidden: !visibleColumns.includes('phone'),
+        accessor: "phone",
+        title: "Phone",
+        hidden: !visibleColumns.includes("phone"),
         render: ({ phone }) => (
           <Group gap={6} wrap="nowrap" c="dimmed">
             <IconPhone size={14} />
-            <Text size="sm">{phone}</Text>
+            <Text size="sm">{phone || "-"}</Text>
           </Group>
         ),
       },
+
       {
-        accessor: 'role',
-        title: 'Role',
-        hidden: !visibleColumns.includes('role'),
+        accessor: "role",
+        title: "Role",
+        hidden: !visibleColumns.includes("role"),
         sortable: true,
-        width: 100,
+        width: 120,
+        render: ({ role }) =>
+          role ? (
+            <Badge color={ROLE_COLORS[role] || "gray"} variant="light" size="sm">
+              {role}
+            </Badge>
+          ) : (
+            <Text c="dimmed" size="sm">
+              -
+            </Text>
+          ),
       },
+
       {
-        accessor: 'status',
-        title: 'Status',
-        hidden: !visibleColumns.includes('status'),
+        accessor: "gender",
+        title: "Gender",
+        hidden: !visibleColumns.includes("gender"),
         sortable: true,
-        width: 100,
-        render: ({ status }) => (
-          <Badge 
-            color={STATUS_COLORS[status] || 'gray'} 
-            variant="light" 
-            size="sm"
-          >
-            {status}
-          </Badge>
-        ),
+        width: 120,
+        render: ({ gender }) =>
+          gender ? (
+            <Badge color={GENDER_COLORS[gender] || "gray"} variant="light" size="sm">
+              {gender}
+            </Badge>
+          ) : (
+            <Text c="dimmed" size="sm">
+              -
+            </Text>
+          ),
       },
+
       {
-        accessor: 'country',
-        title: 'Country',
-        hidden: !visibleColumns.includes('country'),
+        accessor: "age",
+        title: "Age",
+        hidden: !visibleColumns.includes("age"),
         sortable: true,
+        width: 90,
+        render: ({ age }) => <Text size="sm">{typeof age === "number" ? age : "-"}</Text>,
       },
+
       {
-        accessor: 'lastActive',
-        title: 'Last Active',
-        hidden: !visibleColumns.includes('lastActive'),
-        sortable: true,
-        width: 150,
-        render: ({ lastActive }) => {
-            if (!lastActive) {
-              return <Text c="dimmed">-</Text>;
-            }
-            // Using Intl for high performance formatting
-            return new Intl.DateTimeFormat('en-GB', { 
-                day: '2-digit', month: 'short', year: 'numeric' 
-            }).format(new Date(lastActive));
+        accessor: "location",
+        title: "Location",
+        hidden: !visibleColumns.includes("location"),
+        sortable: false,
+        render: (u) => {
+          const city = u.address?.city;
+          const country = u.address?.country;
+          const value = [city, country].filter(Boolean).join(", ");
+          return (
+            <Group gap={6} wrap="nowrap" c="dimmed">
+              <IconMapPin size={14} />
+              <Text size="sm" truncate>
+                {value || "-"}
+              </Text>
+            </Group>
+          );
         },
       },
+
       {
-        accessor: 'actions',
-        title: '',
-        width: 60, // Fixed small width
-        textAlign: 'right',
-        pinned: 'right', // Mantine datatable specific
+        accessor: "company",
+        title: "Company",
+        hidden: !visibleColumns.includes("company"),
+        sortable: false,
+        render: (u) => {
+          const name = u.company?.name;
+          const title = u.company?.title;
+          return (
+            <Group gap={6} wrap="nowrap" c="dimmed">
+              <IconBuilding size={14} />
+              <div style={{ minWidth: 0 }}>
+                <Text size="sm" truncate>
+                  {name || "-"}
+                </Text>
+                {title ? (
+                  <Text size="xs" c="dimmed" truncate>
+                    {title}
+                  </Text>
+                ) : null}
+              </div>
+            </Group>
+          );
+        },
+      },
+
+      {
+        accessor: "birthDate",
+        title: "Birth Date",
+        hidden: !visibleColumns.includes("birthDate"),
+        sortable: true,
+        width: 140,
+        render: (u) => {
+          if (!u.birthDate) return <Text c="dimmed">-</Text>;
+          // DummyJSON date sometimes "1996-5-30" => safe parse
+          const d = new Date(u.birthDate);
+          if (Number.isNaN(d.getTime())) return <Text c="dimmed">-</Text>;
+          return new Intl.DateTimeFormat("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          }).format(d);
+        },
+      },
+
+      {
+        accessor: "actions",
+        title: "",
+        width: 60,
+        textAlign: "right",
+        pinned: "right",
         render: (user) => (
           <GlobalActionMenu
             onView={() => onView?.(user)}
             onEdit={() => onEdit?.(user)}
             onDelete={() => onDelete?.(user)}
           >
-            {/* Custom Extra Actions specific to Users */}
-            <Menu.Item leftSection={<IconCashBanknote size={16} />} color="orange">
-              Add Deduction
-            </Menu.Item>
+            {/* ضع actions تخص users هنا */}
             <Menu.Divider />
           </GlobalActionMenu>
         ),

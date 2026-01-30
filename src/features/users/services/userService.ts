@@ -1,17 +1,19 @@
 import { httpClient } from '@/core/network/axios.adapter';
 import { IHttpClient } from '@/core/network/http.types';
-import { ApiResponse, IBaseFilter } from '@/types';
+import { IBaseFilter } from '@/types';
 import { CreateUserDto, UserSchema, UserType } from '../validation/user.schema'; // Ensure this path matches your structure
+import { UserApiResponse } from '../types';
 
 export class UserService {
-  constructor(private readonly http: IHttpClient) {}
+  constructor(private readonly http: IHttpClient) { }
 
   // 🟢 READ ALL
-  async getUsers(signal?: AbortSignal, params?: IBaseFilter): Promise<ApiResponse<UserType>> {
-    return this.http.get<ApiResponse<UserType>>('/users', {
+  async getUsers(signal?: AbortSignal, params?: IBaseFilter): Promise<UserApiResponse> {
+
+    return this.http.get<UserApiResponse>('/users', {
       // schema: createApiResponseSchema(UserSchema), // FORCE VALIDATION: Must be a UsersApiResponse
       signal, // ENABLE CANCELLATION
-      params,
+      params: { q: params?.q },
     });
   }
 

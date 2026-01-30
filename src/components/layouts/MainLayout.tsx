@@ -8,7 +8,7 @@ import { useSidebarStore } from '@/store/use-sidebarStore';
 export default function MainLayout() {
 
   
-   const {desktopOpened,toggleDesktop,  mobileOpened, toggleMobile,handleToggle } = useSidebarStore();
+   const {desktopOpened,  mobileOpened,handleToggle } = useSidebarStore();
 
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme?.breakpoints?.sm})`);

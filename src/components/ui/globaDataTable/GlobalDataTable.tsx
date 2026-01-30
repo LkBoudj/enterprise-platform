@@ -64,8 +64,8 @@ export function GlobalDataTable<T>({
         fetching={fetching}
         // الترقيم (Pagination)
         page={Number(page)}
-        onPageChange={setPage || (() => {})}
-        onRecordsPerPageChange={setLimit || (() => {})}
+        onPageChange={setPage || (() => { })}
+        onRecordsPerPageChange={setLimit || (() => { })}
         recordsPerPageOptions={recordsPerPageOptions}
         totalRecords={Number(total)}
         recordsPerPage={Number(limit)}
@@ -76,16 +76,10 @@ export function GlobalDataTable<T>({
         onSortStatusChange={(newSortStatus) => {
           onSortingChange?.(newSortStatus.columnAccessor as string, newSortStatus.direction);
         }}
-        // الاختيار (Selection)
         selectedRecords={selectedRecords}
         onSelectedRecordsChange={onSelectedRecordsChange}
-        // تخصيص الألوان والـ Hover برمجياً
         rowClassName={classes.row}
-        rowExpansion={{
-          content: rowExceptionContent
-            ? rowExceptionContent
-            : ({ record, index, collapse }) => <></>,
-        }}
+        rowExpansion={rowExceptionContent ? {content: rowExceptionContent} : undefined}
       />
     </Box>
   );

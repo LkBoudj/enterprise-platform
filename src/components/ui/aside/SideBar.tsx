@@ -17,14 +17,15 @@ import { SidebarLink } from './SidebarLink';
 import { SidebarUser } from './SidebarUser';
 import { ThemeToggle } from './ThemeToggle';
 import classes from './SideBar.module.css';
+import { getAuthUser } from '@/utils/auth.storage';
 
 export function SideBar({ collapsed, toggle }: SideBarProps) {
   const theme = useMantineTheme();
   const colorScheme = useComputedColorScheme('light');
-
+  const auth = getAuthUser()
   return (
     <Stack data-collapsed={collapsed} className={classes.navbar}>
-      <Stack gap="26">
+      <Stack gap="26" justify='center' align={collapsed?"center":undefined}>
         <Group justify="space-between" align="center" py="lg" px="sm">
           {!collapsed && (
             <Group align="center" wrap="nowrap" onClick={toggle} style={{ cursor: 'pointer' }}>
@@ -63,14 +64,14 @@ export function SideBar({ collapsed, toggle }: SideBarProps) {
         </Stack>
       </Stack>
 
-      <Stack gap={0}>
+      <Stack gap={0} justify='center' align={collapsed?"center":undefined}>
         {SECONDARY_LINKS.map((link) => (
           <SidebarLink key={link.label} {...link} collapsed={collapsed} />
         ))}
 
         <ThemeToggle collapsed={collapsed} />
         <SidebarUser
-          user={MOCK_USER}
+          user={auth}
           collapsed={collapsed}
           theme={theme}
           colorScheme={colorScheme}

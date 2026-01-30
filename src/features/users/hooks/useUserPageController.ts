@@ -11,8 +11,7 @@ import { useDeleteUserController } from './useDeleteUserController';
 
 // 1. Define specific filters for Users (if you add role/status filters later)
 interface IUserFilter extends IBaseFilter {
-  // role?: string;
-  // status?: string;
+  
 }
 
 const INITIAL_USER_FILTERS: IUserFilter = {
@@ -21,7 +20,7 @@ const INITIAL_USER_FILTERS: IUserFilter = {
 };
 
 export const defaultVisibleColumns = [
-  'code', // Use code as primary identifier for display
+  'id', // Use code as primary identifier for display
   'name',
   'email',
   'role',
@@ -40,6 +39,7 @@ export const useUserPageController = () => {
     useDisclosure(false);
 
   const [editModalOpened, { open: openEditModal, close: closeEditModal }] = useDisclosure(false);
+
   const [userToEdit, setUserToEdit] = useState<UserType | null>(null);
 
   const handleEditClick = (user: UserType) => {
@@ -61,7 +61,7 @@ export const useUserPageController = () => {
   
   const { columns, allColumns } = useUserColumns({
     visibleColumns,
-    onView: (user) => navigate(`/users/${user.code}`), // Navigate using code
+    onView: (user) => navigate(`/users/${user.id}`), // Navigate using code
     onEdit: handleEditClick, // Example action
     onDelete: confirmDelete, // Example action
   });
@@ -69,8 +69,8 @@ export const useUserPageController = () => {
 
   return {
     // Data Props
-    records: data?.data || [], // Handle API response structure
-    total: data?.meta?.total || 0, // Adjust based on API response
+    records: data?.users || [], // Handle API response structure
+    total: data?.total || 0, // Adjust based on API response
     page: filters.page,
     limit: filters.limit,
     isLoading: isLoading || isFetching,

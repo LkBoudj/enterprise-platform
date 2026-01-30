@@ -8,6 +8,7 @@ import { CreateUserDto } from '../validation/user.schema';
 // ==============================
 
 export const useGetUsers = (filters: IBaseFilter) => {
+
   return useQuery({
     // Filter MUST be in the key to trigger refetch on change
     queryKey: ['users', filters], 
@@ -34,6 +35,7 @@ export const useGetUser = (code?: string) => {
 
 export const useCreateUser = () => {
   return useMutation({
+    mutationKey:["createuser"],
     mutationFn: (data: CreateUserDto) => userService.createUser(data),
   });
 };
